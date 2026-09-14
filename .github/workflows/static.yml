@@ -1,0 +1,60 @@
+name: Build and deploy game
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout game branch
+        uses: actions/checkout@v4
+        with:
+          ref: master
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pygbag
+        run: pip install pygbag
+      - name: Build web game
+        run: python -m pygbag --build pipi.py
+      - name: Remove browser white margins
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('build/web/index.html')
+          s = p.read_text(encoding='utf-8')
+          css = '''<style id="game-fullscreen-fix">
+          html, body { margin: 0 !important; padding: 0 !important; width: 100% !important; height: 100% !important; overflow: hidden !important; background: #000 !important; }
+          canvas { display: block !important; width: 100vw !important; height: 100vh !important; max-width: none !important; max-height: none !important; }
+          </style>'''
+          s = s.replace('</head>', css + '</head>', 1)
+          p.write_text(s, encoding='utf-8')
+          PY
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/web
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
