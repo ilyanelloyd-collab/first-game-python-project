@@ -30,6 +30,22 @@ jobs:
         run: pip install pygbag
       - name: Build web game
         run: python -m pygbag --build pipi.py
+      - name: Remove browser white margins
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('build/web/index.html')
+          s = p.read_text(encoding='utf-8')
+          css = '''<style id="game-fullscreen-fix">
+          html, body { margin: 0 !important; padding: 0 !important; width: 100% !important; height: 100% !important; overflow: hidden !important; background: #000 !important; }
+          canvas { display: block !important; width: 100vw !important; height: 100vh !important; max-width: none !important; max-height: none !important; }
+          </style>'''
+          if 'id="game-fullscreen-fix"' not in s:
+              s = s.replace('</head>', css + '</head>', 1)
+          else:
+              s = s.replace('</head>', css + '</head>', 1)
+          p.write_text(s, encoding='utf-8')
+          PY
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
