@@ -1,10 +1,7 @@
 import asyncio
 import pygame
 
-# Initialize pygame before importing the game modules so assets and mixer are ready.
 pygame.init()
-
-from game import Game
 
 
 async def main():
@@ -12,10 +9,10 @@ async def main():
     clock = pygame.time.Clock()
 
     pygame.display.set_caption("la3bat scrims l m3argin ta5ser t5aless")
-
-    # Keep the original game coordinate system. Pygbag handles the browser canvas.
     screen = pygame.display.set_mode((2010, 1000))
 
+    # Load the menu assets first so the browser gets a valid pygame surface
+    # before any game module performs asset loading.
     background = pygame.image.load('assets/bg.jpg')
     background = pygame.transform.scale(background, screen.get_size())
     banner = pygame.image.load('assets/banner.png')
@@ -24,6 +21,8 @@ async def main():
     play_button = pygame.transform.scale(play_button, (625, 200))
     play_button_rect = play_button.get_rect(topleft=(665, 500))
 
+    # Import the game only after pygame and the display are ready.
+    from game import Game
     game = Game()
 
     while True:
