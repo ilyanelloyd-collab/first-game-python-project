@@ -1,12 +1,17 @@
 import asyncio
 import pygame
+
+# Pygbag/browser: initialize pygame BEFORE importing game modules.
+# animation.py loads image assets during import, so doing the import first
+# can leave the browser canvas stuck on a grey screen.
+pygame.init()
+
 from game import Game
 
-pygame.init()
 
 async def main():
     clock = pygame.time.Clock()
-    FPS = 180
+    FPS = 60
 
     pygame.display.set_caption("la3bat scrims l m3argin ta5ser t5aless")
     screen = pygame.display.set_mode((2010, 1000))
@@ -22,22 +27,11 @@ async def main():
     running = True
 
     while running:
-        screen.blit(background, (0, 0))
-
-        if game.is_playing:
-            game.update(screen)
-        else:
-            screen.blit(play_button, (665, 500))
-            screen.blit(banner, (580, -60))
-
-        pygame.display.flip()
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.KEYDOWN:
                 game.pressed[event.key] = True
-
                 if event.key == pygame.K_SPACE:
                     game.start()
                     game.sound_manager.play('click')
@@ -52,9 +46,19 @@ async def main():
                     game.start()
                     game.sound_manager.play('click')
 
+        screen.blit(background, (0, 0))
+
+        if game.is_playing:
+            game.update(screen)
+        else:
+            screen.blit(play_button, play_button_rect)
+            screen.blit(banner, (580, -60))
+
+        pygame.display.flip()
         clock.tick(FPS)
         await asyncio.sleep(0)
 
     pygame.quit()
+
 
 asyncio.run(main())
