@@ -40,10 +40,7 @@ jobs:
           html, body { margin: 0 !important; padding: 0 !important; width: 100% !important; height: 100% !important; overflow: hidden !important; background: #000 !important; }
           canvas { display: block !important; width: 100vw !important; height: 100vh !important; max-width: none !important; max-height: none !important; }
           </style>'''
-          if 'id="game-fullscreen-fix"' not in s:
-              s = s.replace('</head>', css + '</head>', 1)
-          else:
-              s = s.replace('</head>', css + '</head>', 1)
+          s = s.replace('</head>', css + '</head>', 1)
           p.write_text(s, encoding='utf-8')
           PY
       - name: Upload Pages artifact
