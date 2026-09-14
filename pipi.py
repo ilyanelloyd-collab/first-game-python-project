@@ -2,8 +2,6 @@ import asyncio
 import pygame
 
 # Pygbag/browser: initialize pygame BEFORE importing game modules.
-# animation.py loads image assets during import, so doing the import first
-# can leave the browser canvas stuck on a grey screen.
 pygame.init()
 
 from game import Game
@@ -14,9 +12,12 @@ async def main():
     FPS = 60
 
     pygame.display.set_caption("la3bat scrims l m3argin ta5ser t5aless")
-    screen = pygame.display.set_mode((2010, 1000))
+    # Let pygame scale the 2010x1000 game to the browser canvas.
+    # This avoids the visible white margins caused by the unscaled window.
+    screen = pygame.display.set_mode((2010, 1000), pygame.SCALED)
 
     background = pygame.image.load('assets/bg.jpg')
+    background = pygame.transform.scale(background, screen.get_size())
     banner = pygame.image.load('assets/banner.png')
     banner = pygame.transform.scale(banner, (750, 750))
     play_button = pygame.image.load('assets/button.png')
