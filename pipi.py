@@ -12,9 +12,10 @@ async def main():
     FPS = 60
 
     pygame.display.set_caption("la3bat scrims l m3argin ta5ser t5aless")
-    # Let pygame scale the 2010x1000 game to the browser canvas.
-    # This avoids the visible white margins caused by the unscaled window.
-    screen = pygame.display.set_mode((2010, 1000), pygame.SCALED)
+
+    # Use a 16:9 game surface so the browser does not add aspect-ratio bars.
+    # The existing game logic still uses the same 2010px horizontal coordinates.
+    screen = pygame.display.set_mode((2010, 1130))
 
     background = pygame.image.load('assets/bg.jpg')
     background = pygame.transform.scale(background, screen.get_size())
@@ -58,8 +59,6 @@ async def main():
         pygame.display.flip()
         clock.tick(FPS)
         await asyncio.sleep(0)
-
-    pygame.quit()
 
 
 asyncio.run(main())
