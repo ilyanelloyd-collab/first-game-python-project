@@ -1,21 +1,20 @@
 import asyncio
 import pygame
 
-# Pygbag/browser: initialize pygame BEFORE importing game modules.
+# Initialize pygame before importing the game modules so assets and mixer are ready.
 pygame.init()
 
 from game import Game
 
 
 async def main():
-    clock = pygame.time.Clock()
     FPS = 60
+    clock = pygame.time.Clock()
 
     pygame.display.set_caption("la3bat scrims l m3argin ta5ser t5aless")
 
-    # Use a 16:9 game surface so the browser does not add aspect-ratio bars.
-    # The existing game logic still uses the same 2010px horizontal coordinates.
-    screen = pygame.display.set_mode((2010, 1130))
+    # Keep the original game coordinate system. Pygbag handles the browser canvas.
+    screen = pygame.display.set_mode((2010, 1000))
 
     background = pygame.image.load('assets/bg.jpg')
     background = pygame.transform.scale(background, screen.get_size())
@@ -26,13 +25,14 @@ async def main():
     play_button_rect = play_button.get_rect(topleft=(665, 500))
 
     game = Game()
-    running = True
 
-    while running:
+    while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                running = False
-            elif event.type == pygame.KEYDOWN:
+                pygame.quit()
+                return
+
+            if event.type == pygame.KEYDOWN:
                 game.pressed[event.key] = True
                 if event.key == pygame.K_SPACE:
                     game.start()
@@ -41,8 +41,10 @@ async def main():
                     game.player.launch_projectile(-1)
                 elif event.key == pygame.K_d:
                     game.player.launch_projectile(1)
+
             elif event.type == pygame.KEYUP:
                 game.pressed[event.key] = False
+
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if play_button_rect.collidepoint(event.pos):
                     game.start()
