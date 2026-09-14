@@ -4,9 +4,7 @@ import random
 import monster
 
 
-
 class Comet(pygame.sprite.Sprite):
-
     def __init__(self, comet_event):
         super().__init__()
         self.image = pygame.image.load('assets/comet.png')
@@ -25,17 +23,18 @@ class Comet(pygame.sprite.Sprite):
             self.comet_event.game.spawn_monster(monster.mummy)
             self.comet_event.game.spawn_monster(monster.alien)
 
-
     def fall(self):
         self.rect.y += self.velocity
         if self.rect.y >= 710:
             print("pipi")
             self.remove()
-            if len(self.comet_event.all_comets)== 0:
+            if len(self.comet_event.all_comets) == 0:
                 self.comet_event.reset_percent()
-                self.comet_event.fall_mode = False
+                self.comet_event.Fall_mode = False
+            return
 
-        if self.comet_event.game.check_collision(self, self.comet_event.game.all_players):
+        if self.comet_event.game.check_collision(
+            self, self.comet_event.game.all_players
+        ):
             self.remove()
             self.comet_event.game.player.damage(20)
-
