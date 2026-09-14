@@ -1,13 +1,17 @@
 import pygame
 
+
 class SoundManager:
     def __init__(self, game):
-        self.sounds = {
-            'click': pygame.mixer.Sound('assets/sounds/click.ogg'),
-            'game_over': pygame.mixer.Sound('assets/sounds/game_over.ogg'),
-            'meteorite': pygame.mixer.Sound('assets/sounds/meteorite.ogg'),
-            'tir': pygame.mixer.Sound('assets/sounds/tir.ogg'),
-        }
+        self.game = game
+        self.sounds = {}
 
     def play(self, name):
-        self.sounds[name].play()
+        # Browsers can block audio until the first user interaction.
+        # Never let an audio problem stop the game from rendering.
+        try:
+            if name not in self.sounds:
+                self.sounds[name] = pygame.mixer.Sound(f'assets/sounds/{name}.ogg')
+            self.sounds[name].play()
+        except Exception:
+            pass
