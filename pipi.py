@@ -1,5 +1,11 @@
 import asyncio
+import os
 import pygame
+
+# Pygbag runs the game in a browser filesystem where the working directory
+# can differ from the script directory. Always resolve assets from the repo.
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+os.chdir(BASE_DIR)
 
 pygame.init()
 
